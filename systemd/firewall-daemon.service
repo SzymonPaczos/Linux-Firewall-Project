@@ -1,0 +1,61 @@
+[Unit]
+Description=Firewall Daemon - Modern network firewall management daemon
+Documentation=https://github.com/firewall-daemon
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/firewall-daemon
+ExecStop=/bin/kill -TERM $MAINPID
+ExecReload=/bin/kill -USR1 $MAINPID
+PIDFile=/var/run/firewall-daemon.pid
+Restart=on-failure
+RestartSec=5
+User=root
+Group=root
+
+# Security - least privilege model
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/run /var/log /proc/net
+InaccessiblePaths=/proc/sys/net/ipv4/conf
+ReadOnlyPaths=/proc/sys/net/ipv4/conf
+
+# Seccomp sandbox
+SeccompFilter=@system-service
+
+# AppArmor profile (optional)
+# AppArmorProfile=/etc/apparmor.d/firewall-daemon
+
+# Capabilities
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW CAP_SYS_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW CAP_SYS_ADMIN
+
+# Limit resources
+LimitNOFILE=65536
+LimitNPROC=1024
+MemoryMax=256M
+CPUQuota=50%
+
+# Environment
+Environment=LD_LIBRARY_PATH=/usr/lib:/usr/local/lib
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=/var/run/dbus/system_bus_socket
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=firewall-daemon
+
+[Install]
+WantedBy=multi-user.target
+Also=firewall-daemon.socket
+
+[Socket]
+ListenStream=/var/run/firewall-daemon.sock
+SocketUser=root
+SocketGroup=root
+SocketMode=0660

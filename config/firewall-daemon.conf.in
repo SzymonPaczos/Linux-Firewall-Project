@@ -1,0 +1,163 @@
+# Firewall Daemon Configuration
+# File: @CMAKE_INSTALL_PREFIX@/etc/firewall-daemon/firewall-daemon.conf
+
+[General]
+# Daemon identifier
+Ident=firewall-daemon
+
+# Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+LogLevel=INFO
+
+# Maximum log file size (in MB)
+MaxLogSize=100
+
+# Number of days to retain logs
+LogRetentionDays=30
+
+# Whether to run as background daemon
+DaemonMode=true
+
+# Health check interval (in seconds)
+HealthCheckInterval=30
+
+[Netfilter]
+# Firewall backend type (iptables, nftables, auto)
+BackendType=auto
+
+# Whether to automatically detect available backend
+AutoDetectBackend=true
+
+# Timeout for firewall operations (in seconds)
+OperationTimeout=30
+
+# Maximum number of rules in cache
+MaxRulesCache=1000
+
+# Rule cache refresh interval (in seconds)
+RulesCacheRefreshInterval=30
+
+[Conntrack]
+# Whether to enable connection monitoring
+EnableMonitoring=true
+
+# Maximum number of events in cache
+MaxEventsCache=1000
+
+# Timeout for netlink socket (in seconds)
+NetlinkTimeout=1
+
+# Netlink multicast groups to listen to
+NetlinkGroups=new,update,destroy,expired
+
+# Monitor health check interval (in seconds)
+MonitorHealthCheckInterval=60
+
+[DBus]
+# Whether to enable DBus interface
+EnableDBus=true
+
+# DBus service name
+ServiceName=org.firewall.Daemon
+
+# DBus object path
+ObjectPath=/org/firewall/Daemon
+
+# DBus interface
+Interface=org.firewall.Daemon
+
+# Timeout for DBus operations (in seconds)
+DBusTimeout=10
+
+# Maximum number of concurrent DBus connections
+MaxDBusConnections=100
+
+[Security]
+# Whether to enable seccomp sandbox
+EnableSeccomp=true
+
+# Whether to enable AppArmor
+EnableAppArmor=false
+
+# Path to AppArmor profile
+AppArmorProfile=/etc/apparmor.d/firewall-daemon
+
+# Maximum process privileges
+MaxPrivileges=CAP_NET_ADMIN,CAP_NET_RAW,CAP_SYS_ADMIN
+
+# Whether to restrict filesystem access
+RestrictFileSystem=true
+
+# Paths accessible read-only
+ReadOnlyPaths=/proc/sys/net/ipv4/conf,/etc/firewall-daemon
+
+# Paths accessible for writing
+WriteablePaths=/var/run,/var/log,/proc/net
+
+[Performance]
+# Maximum number of worker threads
+MaxWorkerThreads=4
+
+# Buffer size for network operations (in bytes)
+NetworkBufferSize=8192
+
+# Timeout for blocking operations (in seconds)
+BlockingTimeout=5
+
+# Whether to enable compiler optimizations
+EnableOptimizations=true
+
+# Maximum memory usage (in MB)
+MaxMemoryUsage=256
+
+# Maximum CPU usage (in percentage)
+MaxCPUUsage=50
+
+[Monitoring]
+# Whether to enable performance monitoring
+EnablePerformanceMonitoring=true
+
+# Metrics collection interval (in seconds)
+MetricsCollectionInterval=60
+
+# Maximum number of metrics in memory
+MaxMetricsInMemory=1000
+
+# Whether to export metrics to Prometheus
+ExportPrometheusMetrics=false
+
+# Port for Prometheus metrics
+PrometheusPort=9090
+
+# Path to metrics file
+MetricsFilePath=/var/log/firewall-daemon/metrics.log
+
+[Logging]
+# Log format (json, syslog, plain)
+LogFormat=json
+
+# Whether to enable file logging
+EnableFileLogging=true
+
+# Path to log file
+LogFilePath=/var/log/firewall-daemon/firewall-daemon.log
+
+# Whether to enable log rotation
+EnableLogRotation=true
+
+# Maximum log file size (in MB)
+MaxLogFileSize=100
+
+# Number of log files to keep
+LogFilesToKeep=5
+
+# Whether to compress old log files
+CompressOldLogs=true
+
+# Whether to enable syslog logging
+EnableSyslog=true
+
+# Syslog facility
+SyslogFacility=daemon
+
+# Whether to enable journald logging
+EnableJournald=true
