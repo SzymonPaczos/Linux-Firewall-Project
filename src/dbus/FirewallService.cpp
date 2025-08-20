@@ -7,20 +7,20 @@
 FirewallService::FirewallService(std::shared_ptr<Logger> logger) 
     : logger_(logger), netfilter_backend_(nullptr) {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "FirewallService utworzony");
+        logger_->log(Logger::LogLevel::INFO, "FirewallService created.");
     }
 }
 
 FirewallService::~FirewallService() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "FirewallService zniszczony");
+        logger_->log(Logger::LogLevel::INFO, "FirewallService destroyed.");
     }
 }
 
 std::error_code FirewallService::initialize() {
     try {
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Inicjalizacja FirewallService...");
+            logger_->log(Logger::LogLevel::INFO, "Initialization of FirewallService...");
         }
         
         // Check if backend is available
@@ -39,7 +39,7 @@ std::error_code FirewallService::initialize() {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas inicjalizacji: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error during initialization: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -48,7 +48,7 @@ std::error_code FirewallService::initialize() {
 void FirewallService::setNetfilterBackend(NetfilterBackend* backend) {
     netfilter_backend_ = backend;
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "NetfilterBackend ustawiony w FirewallService");
+        logger_->log(Logger::LogLevel::INFO, "NetfilterBackend set in FirewallService");
     }
 }
 
@@ -70,13 +70,13 @@ std::vector<FirewallRule> FirewallService::listRules() {
         // Log operation
         nlohmann::json data;
         data["rule_count"] = rules.size();
-        logger_->log(Logger::LogLevel::INFO, "Lista reguł zapory pobrana", data);
+        logger_->log(Logger::LogLevel::INFO, "Firewall rules list retrieved", data);
         
         return rules;
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas pobierania listy reguł: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error while retrieving rules list: " + std::string(e.what()));
         }
         return {};
     }
@@ -99,7 +99,7 @@ std::error_code FirewallService::addRule(const std::string& rule_string) {
         auto rule = parseRuleString(rule_string);
         if (!rule) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Nieprawidłowy format reguły: " + rule_string);
+                logger_->log(Logger::LogLevel::ERROR, "Invalid rule format: " + rule_string);
             }
             return std::make_error_code(std::errc::invalid_argument);
         }
@@ -107,7 +107,7 @@ std::error_code FirewallService::addRule(const std::string& rule_string) {
         // Validate rule
         if (!validateRule(*rule)) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Reguła nie przeszła walidacji: " + rule_string);
+                logger_->log(Logger::LogLevel::ERROR, "Rule validation failed: " + rule_string);
             }
             return std::make_error_code(std::errc::invalid_argument);
         }
@@ -116,7 +116,7 @@ std::error_code FirewallService::addRule(const std::string& rule_string) {
         auto ec = netfilter_backend_->addRule(*rule);
         if (ec) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Błąd podczas dodawania reguły", ec);
+                logger_->log(Logger::LogLevel::ERROR, "Error while adding rule", ec);
             }
             return ec;
         }
@@ -129,7 +129,7 @@ std::error_code FirewallService::addRule(const std::string& rule_string) {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas dodawania reguły: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error while adding rule: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -145,7 +145,7 @@ std::error_code FirewallService::deleteRule(int rule_id) {
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Usuwanie reguły o ID: " + std::to_string(rule_id));
+            logger_->log(Logger::LogLevel::INFO, "Removing rule with ID: " + std::to_string(rule_id));
         }
         
         // Sprawdź czy reguła istnieje
@@ -158,20 +158,20 @@ std::error_code FirewallService::deleteRule(int rule_id) {
         auto ec = netfilter_backend_->deleteRule(rule_id);
         if (ec) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Błąd podczas usuwania reguły", ec);
+                logger_->log(Logger::LogLevel::ERROR, "Error while removing rule", ec);
             }
             return ec;
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Reguła usunięta pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "Rule removed successfully");
         }
         
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas usuwania reguły: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error while removing rule: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -192,14 +192,14 @@ std::vector<Connection> FirewallService::getConnections() {
         nlohmann::json data;
         data["connection_count"] = connections.size();
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Lista połączeń pobrana", data);
+            logger_->log(Logger::LogLevel::INFO, "Connections list retrieved", data);
         }
         
         return connections;
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas pobierania listy połączeń: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error while retrieving connections list: " + std::string(e.what()));
         }
         return {};
     }
@@ -233,7 +233,7 @@ void FirewallService::emitConnectionEvent(const Connection& connection) {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas emitowania zdarzenia połączenia: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error while emitting connection event: " + std::string(e.what()));
         }
     }
 }
@@ -272,7 +272,7 @@ std::optional<FirewallRule> FirewallService::parseRuleString(const std::string& 
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd parsowania reguły: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Rule parsing error: " + std::string(e.what()));
         }
         return std::nullopt;
     }
@@ -327,7 +327,7 @@ std::optional<FirewallRule> FirewallService::parse_iptables_format(const std::st
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd parsowania formatu iptables: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "iptables format parsing error: " + std::string(e.what()));
         }
         return std::nullopt;
     }

@@ -7,13 +7,13 @@
 DbusInterface::DbusInterface(std::shared_ptr<Logger> logger) 
     : logger_(logger), running_(false), connection_(nullptr) {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "DbusInterface utworzony");
+        logger_->log(Logger::LogLevel::INFO, "DbusInterface has been created.");
     }
 }
 
 DbusInterface::~DbusInterface() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "DbusInterface zniszczony");
+        logger_->log(Logger::LogLevel::INFO, "DbusInterface has been destroyed.");
     }
     
     if (running_.load()) {
@@ -27,7 +27,7 @@ std::error_code DbusInterface::initialize() {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Inicjalizacja interfejsu DBus...");
+        logger_->log(Logger::LogLevel::INFO, "DBus interface initialization in progress...");
     }
     
     try {
@@ -35,7 +35,7 @@ std::error_code DbusInterface::initialize() {
         auto ec = initializeConnection();
         if (ec) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Błąd inicjalizacji połączenia DBus", ec);
+                logger_->log(Logger::LogLevel::ERROR, "During initialization of DBus occurred an error.", ec);
             }
             return ec;
         }
@@ -47,20 +47,20 @@ std::error_code DbusInterface::initialize() {
         ec = registerService();
         if (ec) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Błąd rejestracji usługi DBus", ec);
+                logger_->log(Logger::LogLevel::ERROR, "Error during registration of DBus service.", ec);
             }
             return ec;
         }
         
         initialized_ = true;
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Interfejs DBus zainicjalizowany pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "DBus interface has been initialized successfully.");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas inicjalizacji: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "DBus interface initialization error: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -76,7 +76,7 @@ std::error_code DbusInterface::run() {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Uruchamianie pętli DBus...");
+        logger_->log(Logger::LogLevel::INFO, "Starting DBus loop...");
     }
     
     try {
@@ -89,7 +89,7 @@ std::error_code DbusInterface::run() {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas uruchamiania: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error during startup: " + std::string(e.what()));
         }
         running_ = false;
         return std::make_error_code(std::errc::operation_canceled);
@@ -102,7 +102,7 @@ std::error_code DbusInterface::stop() {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Zatrzymywanie interfejsu DBus...");
+        logger_->log(Logger::LogLevel::INFO, "Stopping DBus interface...");
     }
     
     try {
@@ -112,13 +112,13 @@ std::error_code DbusInterface::stop() {
         // TODO: Implementacja zatrzymywania pętli DBus
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Interfejs DBus zatrzymany pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "DBus interface stopped successfully");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas zatrzymywania: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error during shutdown: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -159,7 +159,7 @@ void DbusInterface::emitConnectionEvent(const Connection& connection) {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas emitowania zdarzenia połączenia: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error while emitting connection event: " + std::string(e.what()));
         }
     }
 }
@@ -169,7 +169,7 @@ std::error_code DbusInterface::initializeConnection() {
     // Na razie zwracamy sukces
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Połączenie DBus zainicjalizowane (symulacja)");
+        logger_->log(Logger::LogLevel::INFO, "DBus connection initialized (simulation)");
     }
     return std::error_code{};
 }
@@ -179,14 +179,14 @@ std::error_code DbusInterface::registerService() {
     // Na razie zwracamy sukces
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Usługa DBus zarejestrowana (symulacja)");
+        logger_->log(Logger::LogLevel::INFO, "DBus service registered (simulation)");
     }
     return std::error_code{};
 }
 
 void DbusInterface::dbusLoop() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Pętla główna DBus uruchomiona");
+        logger_->log(Logger::LogLevel::INFO, "Main DBus loop started");
     }
     
     try {
@@ -199,12 +199,12 @@ void DbusInterface::dbusLoop() {
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Pętla główna DBus zatrzymana");
+            logger_->log(Logger::LogLevel::INFO, "Main DBus loop stopped");
         }
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny w pętli DBus: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error in DBus loop: " + std::string(e.what()));
         }
     }
 }
@@ -217,7 +217,7 @@ void DbusInterface::handleDbusMessage() {
     static int message_count = 0;
     if (++message_count % 1000 == 0) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::DEBUG, "Obsłużono " + std::to_string(message_count) + " wiadomości DBus");
+            logger_->log(Logger::LogLevel::DEBUG, "Handled " + std::to_string(message_count) + " DBus messages");
         }
     }
 }

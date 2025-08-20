@@ -20,13 +20,13 @@
 ConntrackMonitor::ConntrackMonitor(std::shared_ptr<Logger> logger) 
     : logger_(logger), running_(false), netlink_socket_(-1) {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "ConntrackMonitor utworzony");
+        logger_->log(Logger::LogLevel::INFO, "ConntrackMonitor created");
     }
 }
 
 ConntrackMonitor::~ConntrackMonitor() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "ConntrackMonitor zniszczony");
+        logger_->log(Logger::LogLevel::INFO, "ConntrackMonitor destroyed");
     }
     
     if (running_.load()) {
@@ -48,7 +48,7 @@ std::error_code ConntrackMonitor::start() {
         auto ec = initializeNetlink();
         if (ec) {
             if (logger_) {
-                logger_->logError("Błąd inicjalizacji netlink", ec);
+                logger_->logError("Netlink initialization error", ec);
             }
             return ec;
         }
@@ -60,13 +60,13 @@ std::error_code ConntrackMonitor::start() {
         stats_.start_time = std::chrono::steady_clock::now();
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Monitor conntrack uruchomiony pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "Conntrack monitor started successfully");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->logError("Błąd krytyczny podczas uruchamiania: " + std::string(e.what()));
+            logger_->logError("Critical error during startup: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -78,7 +78,7 @@ std::error_code ConntrackMonitor::stop() {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Zatrzymywanie monitora conntrack...");
+        logger_->log(Logger::LogLevel::INFO, "Stopping conntrack monitor...");
     }
     
     shutdown_requested_.store(true);
@@ -97,13 +97,13 @@ std::error_code ConntrackMonitor::stop() {
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Monitor conntrack zatrzymany pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "Conntrack monitor stopped successfully");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->logError("Błąd podczas zatrzymywania: " + std::string(e.what()));
+            logger_->logError("Error during shutdown: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -134,26 +134,26 @@ ConntrackMonitor::MonitorStats ConntrackMonitor::getStats() const {
 
 void ConntrackMonitor::monitorLoop() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Pętla monitorowania conntrack uruchomiona");
+        logger_->log(Logger::LogLevel::INFO, "Conntrack monitoring loop started");
     }
     
     try {
         while (running_.load() && !shutdown_requested_.load()) {
             auto ec = listenForEvents();
             if (ec) {
-                logError("Błąd nasłuchiwania zdarzeń", ec);
+                logError("Error listening for events", ec);
                 std::this_thread::sleep_for(std::chrono::seconds(1));
                 continue;
             }
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Pętla monitorowania conntrack zatrzymana");
+            logger_->log(Logger::LogLevel::INFO, "Conntrack monitoring loop stopped");
         }
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->logError("Błąd krytyczny w pętli monitorowania: " + std::string(e.what()));
+            logger_->logError("Critical error in monitoring loop: " + std::string(e.what()));
         }
     }
 }
@@ -207,7 +207,7 @@ std::error_code ConntrackMonitor::initializeNetlink() {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Socket netlink zainicjalizowany pomyślnie");
+        logger_->log(Logger::LogLevel::INFO, "Netlink socket initialized successfully");
     }
     return std::error_code{};
 }

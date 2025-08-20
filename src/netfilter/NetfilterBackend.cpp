@@ -10,13 +10,13 @@
 NetfilterBackend::NetfilterBackend(std::shared_ptr<Logger> logger, BackendType backend) 
     : logger_(logger), backend_type_(backend), initialized_(false) {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "NetfilterBackend utworzony");
+        logger_->log(Logger::LogLevel::INFO, "NetfilterBackend created.");
     }
 }
 
 NetfilterBackend::~NetfilterBackend() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "NetfilterBackend niszczony");
+        logger_->log(Logger::LogLevel::INFO, "NetfilterBackend destroyed.");
     }
     
     if (initialized_) {
@@ -69,7 +69,7 @@ std::error_code NetfilterBackend::initialize() {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas inicjalizacji: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error during initialization: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -137,7 +137,7 @@ std::vector<FirewallRule> NetfilterBackend::listRules() const {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas pobierania reguł: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error while retrieving rules: " + std::string(e.what()));
         }
         return {};
     }
@@ -149,7 +149,7 @@ std::error_code NetfilterBackend::addRule(const FirewallRule& rule) {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Dodawanie reguły: " + rule.chain + " -> " + rule.target);
+        logger_->log(Logger::LogLevel::INFO, "Adding rule: " + rule.chain + " -> " + rule.target);
     }
     
     try {
@@ -209,7 +209,7 @@ std::error_code NetfilterBackend::addRule(const FirewallRule& rule) {
         auto ec = executeIptablesCommand(args);
         if (ec) {
             if (logger_) {
-                logger_->log(Logger::LogLevel::ERROR, "Błąd podczas dodawania reguły", ec);
+                logger_->log(Logger::LogLevel::ERROR, "Error while adding rule", ec);
             }
             return ec;
         }
@@ -223,13 +223,13 @@ std::error_code NetfilterBackend::addRule(const FirewallRule& rule) {
         logger_->logRuleChange("added", formatIptablesRule(rule));
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Reguła dodana pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "Rule added successfully");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas dodawania reguły: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error while adding rule: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -241,7 +241,7 @@ std::error_code NetfilterBackend::deleteRule(int rule_id) {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Usuwanie reguły o ID: " + std::to_string(rule_id));
+        logger_->log(Logger::LogLevel::INFO, "Removing rule with ID: " + std::to_string(rule_id));
     }
     
     try {
@@ -253,7 +253,7 @@ std::error_code NetfilterBackend::deleteRule(int rule_id) {
             
             if (it == rules_cache_.end()) {
                 if (logger_) {
-                    logger_->log(Logger::LogLevel::ERROR, "Reguła o ID " + std::to_string(rule_id) + " nie została znaleziona");
+                    logger_->log(Logger::LogLevel::ERROR, "Rule with ID " + std::to_string(rule_id) + " not found");
                 }
                 return std::make_error_code(std::errc::no_such_file_or_directory);
             }
@@ -263,7 +263,7 @@ std::error_code NetfilterBackend::deleteRule(int rule_id) {
             auto ec = executeIptablesCommand(args);
             if (ec) {
                 if (logger_) {
-                    logger_->log(Logger::LogLevel::ERROR, "Błąd podczas usuwania reguły", ec);
+                    logger_->log(Logger::LogLevel::ERROR, "Error while removing rule", ec);
                 }
                 return ec;
             }
@@ -281,13 +281,13 @@ std::error_code NetfilterBackend::deleteRule(int rule_id) {
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Reguła usunięta pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "Rule removed successfully");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas usuwania reguły: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error while removing rule: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -309,8 +309,8 @@ std::error_code NetfilterBackend::toggleRule(int rule_id, bool enabled) {
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Przełączanie reguły o ID " + std::to_string(rule_id) + " na: " + 
-                    (enabled ? "włączona" : "wyłączona"));
+        logger_->log(Logger::LogLevel::INFO, "Toggling rule with ID " + std::to_string(rule_id) + " to: " +
+            (enabled ? "enabled" : "disabled"));
     }
     
     try {
@@ -322,7 +322,7 @@ std::error_code NetfilterBackend::toggleRule(int rule_id, bool enabled) {
             
             if (it == rules_cache_.end()) {
                 if (logger_) {
-                    logger_->log(Logger::LogLevel::ERROR, "Reguła o ID " + std::to_string(rule_id) + " nie została znaleziona");
+                    logger_->log(Logger::LogLevel::ERROR, "Rule with ID " + std::to_string(rule_id) + " not found");
                 }
                 return std::make_error_code(std::errc::no_such_file_or_directory);
             }
@@ -347,13 +347,13 @@ std::error_code NetfilterBackend::toggleRule(int rule_id, bool enabled) {
         }
         
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "Reguła przełączona pomyślnie");
+            logger_->log(Logger::LogLevel::INFO, "Rule toggled successfully");
         }
         return std::error_code{};
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd krytyczny podczas przełączania reguły: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Critical error while toggling rule: " + std::string(e.what()));
         }
         return std::make_error_code(std::errc::operation_canceled);
     }
@@ -440,7 +440,7 @@ std::vector<Connection> NetfilterBackend::getConnections() const {
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd podczas pobierania połączeń: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "Error while retrieving connections: " + std::string(e.what()));
         }
         return {};
     }
@@ -479,13 +479,13 @@ std::error_code NetfilterBackend::initializeIptables() {
             auto ec = executeIptablesCommand(args);
     if (ec) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "iptables nie jest dostępny", ec);
+            logger_->log(Logger::LogLevel::ERROR, "iptables is not available", ec);
         }
         return ec;
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Backend iptables zainicjalizowany");
+        logger_->log(Logger::LogLevel::INFO, "iptables backend initialized");
     }
     return std::error_code{};
 }
@@ -496,13 +496,13 @@ std::error_code NetfilterBackend::initializeNftables() {
             auto ec = executeNftCommand(args);
     if (ec) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "nftables nie jest dostępny", ec);
+            logger_->log(Logger::LogLevel::ERROR, "nftables is not available", ec);
         }
         return ec;
     }
     
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "Backend nftables zainicjalizowany");
+        logger_->log(Logger::LogLevel::INFO, "nftables backend initialized");
     }
     return std::error_code{};
 }
@@ -575,7 +575,7 @@ FirewallRule NetfilterBackend::parseIptablesRule(const std::string& rule_line) c
         
     } catch (const std::exception& e) {
         if (logger_) {
-            logger_->log(Logger::LogLevel::ERROR, "Błąd parsowania reguły iptables: " + std::string(e.what()));
+            logger_->log(Logger::LogLevel::ERROR, "iptables rule parsing error: " + std::string(e.what()));
         }
     }
     

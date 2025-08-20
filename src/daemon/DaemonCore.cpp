@@ -19,7 +19,7 @@ DaemonCore::DaemonCore() {
         // Initialize logger first
         logger_ = std::make_unique<Logger>();
         if (logger_) {
-            logger_->log(Logger::LogLevel::INFO, "DaemonCore zainicjalizowany");
+            logger_->log(Logger::LogLevel::INFO, "DaemonCore initialized");
         }
     } catch (const std::exception& e) {
         // Logger initialization failed, continue without logging
@@ -28,7 +28,7 @@ DaemonCore::DaemonCore() {
 
 DaemonCore::~DaemonCore() {
     if (logger_) {
-        logger_->log(Logger::LogLevel::INFO, "DaemonCore zniszczony");
+        logger_->log(Logger::LogLevel::INFO, "DaemonCore destroyed");
     }
     
     try {
